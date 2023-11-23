@@ -68,7 +68,9 @@ async def start_fight_function_2(call: types.CallbackQuery, state: FSMContext):
         "physical_attack": hero['physical_attack'],
         "magical_protection": hero['magical_protection'],
         "physical_protection": hero['physical_protection'],
-        "line": 1
+        "control": hero['control'],
+        "control_protection": hero['control_protection'],
+        "line": 1,
     }
     war_user = json.loads(requests.post(url="http://127.0.0.1:8000/war-user/create/", data=data).content)
 
@@ -285,8 +287,8 @@ async def fight_function_1(msg: types.Message, state: FSMContext):
         requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{user['id']}", data=data)
         await state.finish()
     else:
-        status = await check_attack(user_id=state_data['war_user']['id'])
-        if status:
+        status, control_status = await check_attack(user_id=state_data['war_user']['id'])
+        if status or control_status:
             await msg.answer(text=f"Boshqalar hali hujum qilmoqda sabirli bo'ling ⌛")
         else:
             war_status, user_status = await check_winners(state_data['war']['id'], state_data['war_user']['id'])

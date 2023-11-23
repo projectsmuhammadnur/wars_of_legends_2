@@ -17,6 +17,7 @@ class Heroes(models.Model):
     magical_protection = models.IntegerField()
     physical_protection = models.IntegerField()
     control = models.BooleanField()
+    control_protection = models.BooleanField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     users = models.ManyToManyField('telegram_users.TelegramUsers', through='heroes.UserHeroes',

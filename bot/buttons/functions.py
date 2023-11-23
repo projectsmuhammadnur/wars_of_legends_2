@@ -35,7 +35,7 @@ async def check_day(war_id):
 
 async def check_attack(user_id):
     user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user_id}").content)
-    return user['is_attack']
+    return user['is_attack'], user['is_control']
 
 
 async def check_afk(war_id):
