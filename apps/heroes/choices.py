@@ -6,4 +6,3 @@ class HeroRoleChoice(models.TextChoices):
     MAGE = ('mage', "Mage")
     FIGHTER = ('fighter', "Fighter")
     TANK = ('tank', "Tank")
-    SUPPORT = ('support', "Support")
