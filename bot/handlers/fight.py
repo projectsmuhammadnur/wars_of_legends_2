@@ -1,6 +1,6 @@
+import asyncio
 import datetime
 import json
-from time import sleep
 
 import requests
 from aiogram import types
@@ -89,7 +89,7 @@ async def start_fight_function_2(call: types.CallbackQuery, state: FSMContext):
                     text=f"O'yin boshlanishi uchun yana {8 - len(war['users'])} ta odam kerak❗\nBiroz kuting ⌛️")
             except MessageNotModified:
                 pass
-            sleep(60)
+            await asyncio.sleep(0.05)
         else:
             await session.edit_text(text="O'yin boshlandi ✅", reply_markup=await back_main_menu_button())
             await call.message.answer(text=f"Qaysi liniyaga o'tasiz ❓", reply_markup=await select_line_buttons())
