@@ -26,8 +26,8 @@ async def buy_hero_function(msg: types.Message):
 
 @dp.callback_query_handler(Text(startswith='buy_hero_'))
 async def buy_hero_function_2(call: types.CallbackQuery):
-    user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{call.from_user.id}").content)
-    hero = json.loads(requests.get(url=f"http://127.0.0.1:8000/heroes/detail/{call.data.split('_')[-1]}").content)
+    user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{call.from_user.id}/").content)
+    hero = json.loads(requests.get(url=f"http://127.0.0.1:8000/heroes/detail/{call.data.split('_')[-1]}/").content)
     if user['gold'] >= hero['salary']:
         data = {
             "user": user['id'],
@@ -58,7 +58,7 @@ async def buy_gold_function(msg: types.Message):
 async def buy_gold_function_2(call: types.CallbackQuery):
     salary = int(call.data.split("_")[-1])
     gold = int(call.data.split("_")[-2])
-    user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{call.from_user.id}").content)
+    user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{call.from_user.id}/").content)
     if user['diamond'] >= salary:
         data = {
             "gold": user['gold'] + gold,
@@ -108,7 +108,7 @@ async def buy_diamond_function_3(msg: types.Message, state: FSMContext):
     async with state.proxy() as sdata:
         pass
     file_path = await save_photo(msg.photo[-1], "media/donates")
-    user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{msg.from_user.id}").content)
+    user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{msg.from_user.id}/").content)
     files = {'image': open(file_path, 'rb')}
     data = {
         "diamond": sdata['diamond'],
@@ -130,18 +130,18 @@ Chek to'g'rimi?
 @dp.callback_query_handler(Text(startswith="correct_donat_"))
 async def check_buy_diamond_function_1(call: types.CallbackQuery):
     txt1, txt2, donat_id, chat_id, diamond = call.data.split('_')
-    user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{call.from_user.id}").content)
+    user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{call.from_user.id}/").content)
     await call.answer(text="Donat qabul qilindi✅", show_alert=True)
     await call.message.delete()
     await bot.send_message(chat_id=chat_id, text=f"Hisobingizga {diamond} 💎 tushirildi✅")
     data = {
         "status": DonatStatusChoice.CORRECT.value
     }
-    requests.patch(url=f"http://127.0.0.1:8000/donates/update/{donat_id}", data=data)
+    requests.patch(url=f"http://127.0.0.1:8000/donates/update/{donat_id}/", data=data)
     data = {
         'diamond': user['diamond'] + diamond
     }
-    requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{user['id']}", data=data)
+    requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{user['id']}/", data=data)
 
 
 @dp.callback_query_handler(Text(startswith="incorrect_donat_"))
@@ -153,4 +153,4 @@ async def check_buy_diamond_function_2(call: types.CallbackQuery):
     data = {
         "status": DonatStatusChoice.INCORRECT.value
     }
-    requests.patch(url=f"http://127.0.0.1:8000/donates/update/{donat_id}", data=data)
+    requests.patch(url=f"http://127.0.0.1:8000/donates/update/{donat_id}/", data=data)
