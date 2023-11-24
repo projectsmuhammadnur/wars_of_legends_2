@@ -139,7 +139,7 @@ async def check_buy_diamond_function_1(call: types.CallbackQuery):
     }
     requests.patch(url=f"http://127.0.0.1:8000/donates/update/{donat_id}/", data=data)
     data = {
-        'diamond': user['diamond'] + diamond
+        'diamond': user['diamond'] + int(diamond)
     }
     requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{user['id']}/", data=data)
 
