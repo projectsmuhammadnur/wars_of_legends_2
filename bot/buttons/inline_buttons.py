@@ -152,7 +152,6 @@ async def buy_equipments_buttons(war_user_id):
     equipments = json.loads(requests.get(url=f"http://127.0.0.1:8000/equipments/").content)
     design = []
     row = []
-
     for index, equipment in enumerate(equipments['results'], start=1):
         if equipment['id'] not in war_user['equipments']:
             row.append(InlineKeyboardButton(equipment['name'], callback_data=f"buy_equipment_{equipment['id']}"))
@@ -161,7 +160,7 @@ async def buy_equipments_buttons(war_user_id):
             row = []
 
     design.append([InlineKeyboardButton(text=back_main_menu, callback_data=back_main_menu)])
-    return InlineKeyboardMarkup(inline_keyboard=design)
+    return InlineKeyboardMarkup(inline_keyboard=design), war_user['equipments'] == 6
 
 
 async def sell_equipments_buttons(war_user_id):

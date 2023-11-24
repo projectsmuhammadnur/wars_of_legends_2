@@ -47,7 +47,7 @@ async def back_main_menu_function_2(call: types.CallbackQuery):
 
 @dp.message_handler(CommandStart())
 async def start_handler(msg: types.Message, state: FSMContext):
-    user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{msg.from_user.id}").content)
+    user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{msg.from_user.id}/").content)
     try:
         if user['detail']:
             await state.set_state("set_name")
@@ -67,7 +67,7 @@ Username: @{msg.from_user.username}\n""", parse_mode='HTML')
             obj = json.loads(requests.post(url=f"http://127.0.0.1:8000/telegram-users/create/", data=data).content)
             if msg.get_args() != "":
                 add_user = json.loads(
-                    requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{msg.get_args()}").content)
+                    requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{msg.get_args()}/").content)
                 if add_user['id']:
                     await bot.send_message(chat_id=int(msg.get_args()), text=f"""
 Sizning yangi referal azoingiz🆕
@@ -91,7 +91,7 @@ async def set_name_function(msg: types.Message, state: FSMContext):
     data = {
         "name": msg.text
     }
-    user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{msg.from_user.id}").content)
+    user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{msg.from_user.id}/").content)
     obj = json.loads(
         requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{user['id']}/", data=data).content)
     try:

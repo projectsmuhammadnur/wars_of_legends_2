@@ -126,9 +126,13 @@ async def buy_equipments_function_1(msg: types.Message, state: FSMContext):
         requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{user['id']}", data=data)
         await state.finish()
     else:
-        await state.set_state('buy_equipment')
-        await msg.answer(text=f"Qaysi uskunani sotib olasiz 🔨",
-                         reply_markup=await buy_equipments_buttons(war_user_id=state_data['war_user']['id']))
+        bt, status = await buy_equipments_buttons(war_user_id=state_data['war_user']['id'])
+        if not status:
+            await state.set_state('buy_equipment')
+            await msg.answer(text=f"Qaysi uskunani sotib olasiz 🔨",
+                             reply_markup=bt)
+        else:
+            await msg.answer(text=f"Sizning sumkangiz tolgan 👝")
 
 
 @dp.callback_query_handler(Text(startswith='buy_equipment_'), state='buy_equipment')
