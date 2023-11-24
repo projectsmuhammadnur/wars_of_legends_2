@@ -53,7 +53,8 @@ async def start_fight_function_2(call: types.CallbackQuery, state: FSMContext):
     await call.message.delete()
     war = json.loads(requests.get(url=f"http://127.0.0.1:8000/wars/detail/{call.data.split('_')[-2]}").content)
     session = await call.message.answer(
-        text=f"O'yin boshlanishi uchun yana {8 - len(war['users'])} ta odam kerak❗\nBiroz kuting ⌛️")
+        text=f"O'yin boshlanishi uchun yana {8 - len(war['users'])} ta odam kerak❗\nBiroz kuting ⌛️",
+        reply_markup=ReplyKeyboardRemove())
     user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{call.from_user.id}").content)
     hero_id = call.data.split('_')[-1]
     hero = json.loads(requests.get(url=f"http://127.0.0.1:8000/heroes/detail/{hero_id}").content)
