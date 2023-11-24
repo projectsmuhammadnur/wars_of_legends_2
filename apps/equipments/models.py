@@ -22,6 +22,9 @@ class Equipments(models.Model):
         verbose_name = 'Equipment'
         verbose_name_plural = 'Equipments'
 
+    def __str__(self):
+        return f"{self.name}"
+
 
 class UserEquipments(models.Model):
     user = models.ForeignKey('war_user.WarUser', on_delete=models.PROTECT)

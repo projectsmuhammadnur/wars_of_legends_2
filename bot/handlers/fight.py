@@ -200,7 +200,7 @@ async def sell_equipments_function_1(msg: types.Message, state: FSMContext):
 
 
 @dp.callback_query_handler(Text(startswith='sell_equipment_'), state='sell_equipment')
-async def buy_equipments_function_2(call: types.CallbackQuery, state: FSMContext):
+async def sell_equipments_function_2(call: types.CallbackQuery, state: FSMContext):
     async with state.proxy() as state_data:
         pass
     afk_status, afk_id = await check_afk(war_id=state_data['war']['id'])
@@ -220,7 +220,7 @@ async def buy_equipments_function_2(call: types.CallbackQuery, state: FSMContext
         await state.set_state('war_menu')
         await call.message.answer(text=f"Uskuna sotib olindi ✅", reply_markup=await in_war_menu_buttons())
         data = {
-            "gold": war_user['gold'] + (equipment['salary'] * 0.3),
+            "gold": war_user['gold'] + (equipment['salary'] - (equipment['salary'] * 0.4)),
             "health": war_user['health'] - equipment['health'],
             "restore_health": war_user['restore_health'] - equipment['restore_health'],
             "steal_health": war_user['steal_health'] - equipment['steal_health'],
