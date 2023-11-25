@@ -271,6 +271,7 @@ async def get_statistic_function_1(msg: types.Message, state: FSMContext):
 ⚔️Jismoniy hujum: {war_user["physical_attack"]}
 🛡 Jismoniy himoya: {war_user['physical_protection']}\n
 """
+    await msg.answer(text=reply)
 
 
 @dp.message_handler(Text(attack), state='war_menu')
