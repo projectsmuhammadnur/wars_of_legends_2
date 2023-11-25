@@ -54,7 +54,7 @@ async def check_afk(war_id):
             }
             requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{tg_user['id']}", data=data)
             return True, user['id']
-    return False
+    return False, None
 
 
 async def check_winners(war_id, war_user_id):
