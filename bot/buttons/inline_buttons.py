@@ -159,7 +159,6 @@ async def buy_equipments_buttons(war_user_id):
             design.append(row)
             row = []
 
-    design.append([InlineKeyboardButton(text=back_main_menu, callback_data=back_main_menu)])
     return InlineKeyboardMarkup(inline_keyboard=design), war_user['equipments'] == 6
 
 

@@ -166,12 +166,10 @@ async def buy_equipments_function_2(call: types.CallbackQuery, state: FSMContext
             }
             requests.patch(url=f"http://127.0.0.1:8000/war-user/update/{war_user['id']}/", data=data)
         else:
-            bt, status = await buy_equipments_buttons(war_user_id=state_data['war_user']['id'])
+            await state.set_state('war_menu')
             await call.message.answer(text=f"""
 Uskuna narxi: {equipment['salary']} tanga 🪙
-Sizda: {war_user['gold']} tanga ❗️
-
-Qaysi uskunani sotib olasiz 🔨""", reply_markup=bt)
+Sizda: {war_user['gold']} tanga ❗️""", reply_markup=await in_war_menu_buttons())
 
 
 @dp.message_handler(Text(sell_equipments), state='war_menu')
@@ -211,7 +209,7 @@ async def sell_equipments_function_2(call: types.CallbackQuery, state: FSMContex
             requests.get(url=f"http://127.0.0.1:8000/equipments/detail/{call.data.split('_')[-1]}/").content)
         await call.message.delete()
         await state.set_state('war_menu')
-        await call.message.answer(text=f"Uskuna sotib olindi ✅", reply_markup=await in_war_menu_buttons())
+        await call.message.answer(text=f"Uskuna sotildi ✅", reply_markup=await in_war_menu_buttons())
         data = {
             "gold": war_user['gold'] + (equipment['salary'] - (equipment['salary'] * 0.4)),
             "health": war_user['health'] - equipment['health'],
