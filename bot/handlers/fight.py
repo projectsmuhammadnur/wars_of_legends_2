@@ -166,11 +166,12 @@ async def buy_equipments_function_2(call: types.CallbackQuery, state: FSMContext
             }
             requests.patch(url=f"http://127.0.0.1:8000/war-user/update/{war_user['id']}/", data=data)
         else:
+            bt, status = await buy_equipments_buttons(war_user_id=state_data['war_user']['id'])
             await call.message.answer(text=f"""
 Uskuna narxi: {equipment['salary']} tanga 🪙
 Sizda: {war_user['gold']} tanga ❗️
 
-Qaysi uskunani sotib olasiz 🔨""", reply_markup=await buy_equipments_buttons(war_user_id=state_data['war_user']['id']))
+Qaysi uskunani sotib olasiz 🔨""", reply_markup=bt)
 
 
 @dp.message_handler(Text(sell_equipments), state='war_menu')
