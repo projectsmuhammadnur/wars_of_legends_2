@@ -130,7 +130,7 @@ Chek to'g'rimi?
 @dp.callback_query_handler(Text(startswith="correct_donat_"))
 async def check_buy_diamond_function_1(call: types.CallbackQuery):
     txt1, txt2, donat_id, chat_id, diamond = call.data.split('_')
-    user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{call.from_user.id}/").content)
+    user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{chat_id}/").content)
     await call.answer(text="Donat qabul qilindi✅", show_alert=True)
     await call.message.delete()
     await bot.send_message(chat_id=chat_id, text=f"Hisobingizga {diamond} 💎 tushirildi✅")
