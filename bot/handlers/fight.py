@@ -90,7 +90,7 @@ async def start_fight_function_2(call: types.CallbackQuery, state: FSMContext):
                 pass
             await asyncio.sleep(60)
         else:
-            await session.edit_text(text="O'yin boshlandi ✅", reply_markup=await back_main_menu_button())
+            await session.edit_text(text="O'yin boshlandi ✅")
             await call.message.answer(text=f"Qaysi liniyaga o'tasiz ❓", reply_markup=await select_line_buttons())
             await state.set_state('select_line')
             data = {
