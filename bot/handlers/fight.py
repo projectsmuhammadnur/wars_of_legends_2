@@ -143,8 +143,8 @@ async def buy_equipments_function_2(call: types.CallbackQuery, state: FSMContext
             requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{state_data['war_user']['id']}/").content)
         equipment = json.loads(
             requests.get(url=f"http://127.0.0.1:8000/equipments/detail/{call.data.split('_')[-1]}/").content)
+        await call.message.delete()
         if war_user['gold'] >= equipment['salary']:
-            await call.message.delete()
             await state.set_state('war_menu')
             await call.message.answer(text=f"Uskuna sotib olindi ✅", reply_markup=await in_war_menu_buttons())
             data = {
@@ -166,7 +166,7 @@ async def buy_equipments_function_2(call: types.CallbackQuery, state: FSMContext
             }
             requests.patch(url=f"http://127.0.0.1:8000/war-user/update/{war_user['id']}/", data=data)
         else:
-            await call.message.edit_text(text=f"""
+            await call.message.answer(text=f"""
 Uskuna narxi: {equipment['salary']} tanga 🪙
 Sizda: {war_user['gold']} tanga ❗️
 
