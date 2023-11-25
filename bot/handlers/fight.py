@@ -14,7 +14,8 @@ from bot.buttons.inline_buttons import get_my_heroes_button, select_line_buttons
     buy_equipments_buttons, sell_equipments_buttons
 from bot.buttons.reply_buttons import back_main_menu_button, in_war_menu_buttons, main_menu_buttons
 from bot.buttons.text import start_fight, attack, buy_equipments, sell_equipments, war_statistic
-from bot.dispatcher import dp
+from bot.dispatcher import dp, bot
+from main import admins
 
 
 @dp.message_handler(Text(start_fight))
@@ -95,6 +96,7 @@ async def start_fight_function_2(call: types.CallbackQuery, state: FSMContext):
                 'is_started': True
             }
             war = json.loads(requests.patch(url=f"http://127.0.0.1:8000/wars/update/{war['id']}/", data=data).content)
+            await bot.send_message(chat_id=admins[0], text=war)
             async with state.proxy() as state_data:
                 state_data['war_user'] = war_user
                 state_data['war'] = war
@@ -131,7 +133,8 @@ async def buy_equipments_function_2(call: types.CallbackQuery, state: FSMContext
     if afk_status:
         await call.message.delete()
         await call.message.answer(text=f"Bir o'yinchi AFK bo'lgani sabali o'yin tohtatildi 😔")
-        user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{call.from_user.id}/").content)
+        user = json.loads(
+            requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{call.from_user.id}/").content)
         data = {"gold": user['gold'] + 60}
         requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{user['id']}/", data=data)
         await state.finish()
@@ -195,7 +198,8 @@ async def sell_equipments_function_2(call: types.CallbackQuery, state: FSMContex
     if afk_status:
         await call.message.delete()
         await call.message.answer(text=f"Bir o'yinchi AFK bo'lgani sabali o'yin tohtatildi 😔")
-        user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{call.from_user.id}/").content)
+        user = json.loads(
+            requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{call.from_user.id}/").content)
         data = {"gold": user['gold'] + 60}
         requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{user['id']}/", data=data)
         await state.finish()
@@ -306,7 +310,8 @@ async def fight_function_1(call: types.CallbackQuery, state: FSMContext):
     if afk_status:
         await call.message.delete()
         await call.message.answer(text=f"Bir o'yinchi AFK bo'lgani sabali o'yin tohtatildi 😔")
-        user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{call.from_user.id}/").content)
+        user = json.loads(
+            requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{call.from_user.id}/").content)
         data = {"gold": user['gold'] + 60}
         requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{user['id']}/", data=data)
         await state.finish()
