@@ -70,7 +70,7 @@ async def check_winners(war_id, war_user_id):
         if user['is_dead'] is True:
             reds.append(user['id'])
     if len(blues) != 4 and len(reds) != 4:
-        return False
+        return False, None
     else:
         user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{war_user_id}/").content)
         winners = max(blues, reds, key=len)
