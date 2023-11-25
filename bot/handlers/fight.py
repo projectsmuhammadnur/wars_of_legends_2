@@ -51,12 +51,12 @@ async def start_fight_function_1(msg: types.Message, state: FSMContext):
 @dp.callback_query_handler(Text(startswith='select_hero_'), state="select_hero")
 async def start_fight_function_2(call: types.CallbackQuery, state: FSMContext):
     await call.message.delete()
-    war = json.loads(requests.get(url=f"http://127.0.0.1:8000/wars/detail/{call.data.split('_')[-2]}").content)
+    war = json.loads(requests.get(url=f"http://127.0.0.1:8000/wars/detail/{call.data.split('_')[-2]}/").content)
     session = await call.message.answer(
         text=f"O'yin boshlanishi uchun yana {8 - len(war['users'])} ta odam kerak❗\nBiroz kuting ⌛️")
-    user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{call.from_user.id}").content)
+    user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{call.from_user.id}/").content)
     hero_id = call.data.split('_')[-1]
-    hero = json.loads(requests.get(url=f"http://127.0.0.1:8000/heroes/detail/{hero_id}").content)
+    hero = json.loads(requests.get(url=f"http://127.0.0.1:8000/heroes/detail/{hero_id}/").content)
     data = {
         "user_id": user['id'],
         "hero_id": hero_id,
@@ -94,7 +94,7 @@ async def start_fight_function_2(call: types.CallbackQuery, state: FSMContext):
             data = {
                 'is_started': True
             }
-            war = json.loads(requests.patch(url=f"http://127.0.0.1:8000/wars/update/{war['id']}", data=data).content)
+            war = json.loads(requests.patch(url=f"http://127.0.0.1:8000/wars/update/{war['id']}/", data=data).content)
             async with state.proxy() as state_data:
                 state_data['war_user'] = war_user
                 state_data['war'] = war
@@ -109,9 +109,9 @@ async def buy_equipments_function_1(msg: types.Message, state: FSMContext):
     afk_status, afk_id = await check_afk(war_id=state_data['war']['id'])
     if afk_status:
         await msg.answer(text=f"Bir o'yinchi AFK bo'lgani sabali o'yin tohtatildi 😔")
-        user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{msg.from_user.id}").content)
+        user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{msg.from_user.id}/").content)
         data = {"gold": user['gold'] + 60}
-        requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{user['id']}", data=data)
+        requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{user['id']}/", data=data)
         await state.finish()
     else:
         bt, status = await buy_equipments_buttons(war_user_id=state_data['war_user']['id'])
@@ -131,15 +131,15 @@ async def buy_equipments_function_2(call: types.CallbackQuery, state: FSMContext
     if afk_status:
         await call.message.delete()
         await call.message.answer(text=f"Bir o'yinchi AFK bo'lgani sabali o'yin tohtatildi 😔")
-        user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{call.from_user.id}").content)
+        user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{call.from_user.id}/").content)
         data = {"gold": user['gold'] + 60}
-        requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{user['id']}", data=data)
+        requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{user['id']}/", data=data)
         await state.finish()
     else:
         war_user = json.loads(
-            requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{state_data['war_user']['id']}").content)
+            requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{state_data['war_user']['id']}/").content)
         equipment = json.loads(
-            requests.get(url=f"http://127.0.0.1:8000/equipments/detail/{call.data.split('_')[-1]}").content)
+            requests.get(url=f"http://127.0.0.1:8000/equipments/detail/{call.data.split('_')[-1]}/").content)
         if war_user['gold'] >= equipment['salary']:
             await call.message.delete()
             await state.set_state('war_menu')
@@ -177,9 +177,9 @@ async def sell_equipments_function_1(msg: types.Message, state: FSMContext):
     afk_status, afk_id = await check_afk(war_id=state_data['war']['id'])
     if afk_status:
         await msg.answer(text=f"Bir o'yinchi AFK bo'lgani sabali o'yin tohtatildi 😔")
-        user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{msg.from_user.id}").content)
+        user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{msg.from_user.id}/").content)
         data = {"gold": user['gold'] + 60}
-        requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{user['id']}", data=data)
+        requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{user['id']}/", data=data)
         await state.finish()
     else:
         await state.set_state('sell_equipment')
@@ -195,15 +195,15 @@ async def sell_equipments_function_2(call: types.CallbackQuery, state: FSMContex
     if afk_status:
         await call.message.delete()
         await call.message.answer(text=f"Bir o'yinchi AFK bo'lgani sabali o'yin tohtatildi 😔")
-        user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{call.from_user.id}").content)
+        user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{call.from_user.id}/").content)
         data = {"gold": user['gold'] + 60}
-        requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{user['id']}", data=data)
+        requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{user['id']}/", data=data)
         await state.finish()
     else:
         war_user = json.loads(
-            requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{state_data['war_user']['id']}").content)
+            requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{state_data['war_user']['id']}/").content)
         equipment = json.loads(
-            requests.get(url=f"http://127.0.0.1:8000/equipments/detail/{call.data.split('_')[-1]}").content)
+            requests.get(url=f"http://127.0.0.1:8000/equipments/detail/{call.data.split('_')[-1]}/").content)
         await call.message.delete()
         await state.set_state('war_menu')
         await call.message.answer(text=f"Uskuna sotib olindi ✅", reply_markup=await in_war_menu_buttons())
@@ -227,12 +227,12 @@ async def get_statistic_function_1(msg: types.Message, state: FSMContext):
     async with state.proxy() as state_data:
         pass
     reply = f"{msg.text}\n\n🔵 Koklar:\n"
-    war = json.loads(requests.get(url=f"http://127.0.0.1:8000/wars/detail/{state_data['war']['id']}").content)
+    war = json.loads(requests.get(url=f"http://127.0.0.1:8000/wars/detail/{state_data['war']['id']}/").content)
     for user in war['users'][:4]:
-        war_user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user}").content)
-        hero = json.loads(requests.get(url=f"http://127.0.0.1:8000/heroes/detail/{war_user['hero_id']}").content)
+        war_user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user}/").content)
+        hero = json.loads(requests.get(url=f"http://127.0.0.1:8000/heroes/detail/{war_user['hero_id']}/").content)
         tg_user = json.loads(
-            requests.get(url=f"http://127.0.0.1:8000/telegram-users/detail/{war_user['user_id']}").content)
+            requests.get(url=f"http://127.0.0.1:8000/telegram-users/detail/{war_user['user_id']}/").content)
         reply += f"""
 👤 Ismi: {tg_user['username']}
 🥷 Qahramon: {hero['name']}
@@ -248,10 +248,10 @@ async def get_statistic_function_1(msg: types.Message, state: FSMContext):
 """
     reply += "\n🔴 Qizillar:\n"
     for user in war['users'][4:]:
-        war_user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user}").content)
-        hero = json.loads(requests.get(url=f"http://127.0.0.1:8000/heroes/detail/{war_user['hero_id']}").content)
+        war_user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user}/").content)
+        hero = json.loads(requests.get(url=f"http://127.0.0.1:8000/heroes/detail/{war_user['hero_id']}/").content)
         tg_user = json.loads(
-            requests.get(url=f"http://127.0.0.1:8000/telegram-users/detail/{war_user['user_id']}").content)
+            requests.get(url=f"http://127.0.0.1:8000/telegram-users/detail/{war_user['user_id']}/").content)
         reply += f"""
 👤 Ismi: {tg_user['username']}
 🥷 Qahramon: {hero['name']}
@@ -274,9 +274,9 @@ async def fight_function_1(msg: types.Message, state: FSMContext):
     afk_status, afk_id = await check_afk(war_id=state_data['war']['id'])
     if afk_status:
         await msg.answer(text=f"Bir o'yinchi AFK bo'lgani sabali o'yin tohtatildi 😔")
-        user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{msg.from_user.id}").content)
+        user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{msg.from_user.id}/").content)
         data = {"gold": user['gold'] + 60}
-        requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{user['id']}", data=data)
+        requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{user['id']}/", data=data)
         await state.finish()
     else:
         status, control_status = await check_attack(user_id=state_data['war_user']['id'])
@@ -306,14 +306,14 @@ async def fight_function_1(call: types.CallbackQuery, state: FSMContext):
     if afk_status:
         await call.message.delete()
         await call.message.answer(text=f"Bir o'yinchi AFK bo'lgani sabali o'yin tohtatildi 😔")
-        user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{call.from_user.id}").content)
+        user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{call.from_user.id}/").content)
         data = {"gold": user['gold'] + 60}
-        requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{user['id']}", data=data)
+        requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{user['id']}/", data=data)
         await state.finish()
     else:
         txt1, txt2, user_id, a_user_id = call.data.split('_')
-        user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user_id}").content)
-        a_user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{a_user_id}").content)
+        user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user_id}/").content)
+        a_user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{a_user_id}/").content)
         health = user["steal_health"] - a_user['stealing_health_protection']
         a_health = (a_user['health'] - (user['magical_attack'] + user["physical_attack"])) + (
                 a_user['magical_protection'] + a_user['physical_protection'])
