@@ -82,7 +82,7 @@ async def start_fight_function_2(call: types.CallbackQuery, state: FSMContext):
     started = False
     while not started:
         war = json.loads(requests.get(url=f"http://127.0.0.1:8000/wars/detail/{call.data.split('_')[-2]}").content)
-        if len(war['users']) != 8:
+        if len(war['users']) < 8:
             try:
                 await session.edit_text(
                     text=f"O'yin boshlanishi uchun yana {8 - len(war['users'])} ta odam kerak❗\nBiroz kuting ⌛️")
@@ -101,6 +101,7 @@ async def start_fight_function_2(call: types.CallbackQuery, state: FSMContext):
             async with state.proxy() as state_data:
                 state_data['war_user'] = war_user
                 state_data['war'] = war
+            started = True
 
 
 @dp.callback_query_handler(Text(startswith="select_line_"), state='select_line')
