@@ -184,9 +184,13 @@ async def sell_equipments_function_1(msg: types.Message, state: FSMContext):
         requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{user['id']}/", data=data)
         await state.finish()
     else:
-        await state.set_state('sell_equipment')
-        await msg.answer(text=f"Qaysi uskunani sotasiz 🔨",
-                         reply_markup=await sell_equipments_buttons(war_user_id=state_data['war_user']['id']))
+        bt, num = await sell_equipments_buttons(war_user_id=state_data['war_user']['id'])
+        if num != 0:
+            await state.set_state('sell_equipment')
+            await msg.answer(text=f"Qaysi uskunani sotasiz 🔨",
+                             reply_markup=bt)
+        else:
+            await msg.answer(text=f"Siz hali uskuna sotib olmagansiz 🔨")
 
 
 @dp.callback_query_handler(Text(startswith='sell_equipment_'), state='sell_equipment')

@@ -175,5 +175,4 @@ async def sell_equipments_buttons(war_user_id):
             design.append(row)
             row = []
 
-    design.append([InlineKeyboardButton(text=back_main_menu, callback_data=back_main_menu)])
-    return InlineKeyboardMarkup(inline_keyboard=design)
+    return InlineKeyboardMarkup(inline_keyboard=design), len(design)
