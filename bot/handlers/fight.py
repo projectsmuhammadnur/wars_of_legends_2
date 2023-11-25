@@ -184,7 +184,7 @@ async def sell_equipments_function_1(msg: types.Message, state: FSMContext):
         await state.finish()
     else:
         bt, num = await sell_equipments_buttons(war_user_id=state_data['war_user']['id'])
-        if num != 0:
+        if num > 0:
             await state.set_state('sell_equipment')
             await msg.answer(text=f"Qaysi uskunani sotasiz 🔨",
                              reply_markup=bt)
