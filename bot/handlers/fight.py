@@ -240,7 +240,7 @@ async def get_statistic_function_1(msg: types.Message, state: FSMContext):
         tg_user = json.loads(
             requests.get(url=f"http://127.0.0.1:8000/telegram-users/detail/{war_user['user_id']}/").content)
         reply += f"""
-👤 Ismi: {tg_user['username']}
+👤 Ismi: {tg_user['name']}
 🥷 Qahramon: {hero['name']}
 🪙 Tanga: {war_user['gold']}
 ❤️ Jon: {war_user['health']}
@@ -259,7 +259,7 @@ async def get_statistic_function_1(msg: types.Message, state: FSMContext):
         tg_user = json.loads(
             requests.get(url=f"http://127.0.0.1:8000/telegram-users/detail/{war_user['user_id']}/").content)
         reply += f"""
-👤 Ismi: {tg_user['username']}
+👤 Ismi: {tg_user['name']}
 🥷 Qahramon: {hero['name']}
 🪙 Tanga: {war_user['gold']}
 ❤️ Jon: {war_user['health']}
@@ -323,8 +323,8 @@ async def fight_function_1(call: types.CallbackQuery, state: FSMContext):
         user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user_id}/").content)
         a_user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{a_user_id}/").content)
         health = user["steal_health"] - a_user['stealing_health_protection']
-        a_health = (a_user['health'] - (user['magical_attack'] + user["physical_attack"])) + (
-                a_user['magical_protection'] + a_user['physical_protection'])
+        a_health = (a_user['health'] - ((user['magical_attack'] + user["physical_attack"]) - (
+                a_user['magical_protection'] + a_user['physical_protection'])))
         a_control = False
         is_dead = False
         if user['control']:
@@ -334,13 +334,13 @@ async def fight_function_1(call: types.CallbackQuery, state: FSMContext):
         if a_health <= 0:
             is_dead = True
         data = {
-            "health": a_health,
+            "health": a_user['health'] - a_health,
             "is_control": a_control,
             "is_dead": is_dead
         }
         requests.patch(url=f"http://127.0.0.1:8000/war-user/update/{a_user['id']}/", data=data)
         data = {
-            "health": health,
+            "health": user['health'] + health,
             "is_attack": True
         }
         requests.patch(url=f"http://127.0.0.1:8000/war-user/update/{user['id']}/", data=data)
