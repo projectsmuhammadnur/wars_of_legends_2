@@ -73,7 +73,6 @@ async def start_fight_function_2(call: types.CallbackQuery, state: FSMContext):
         "line": 1,
     }
     war_user = json.loads(requests.post(url="http://127.0.0.1:8000/war-user/create/", data=data).content)
-
     data = {
         "war_id": war['id'],
         "user_id": war_user['id']
@@ -90,29 +89,17 @@ async def start_fight_function_2(call: types.CallbackQuery, state: FSMContext):
                 pass
             await asyncio.sleep(60)
         else:
-            await session.edit_text(text="O'yin boshlandi ✅")
-            await call.message.answer(text=f"Qaysi liniyaga o'tasiz ❓", reply_markup=await select_line_buttons())
-            await state.set_state('select_line')
+            await session.delete()
+            await call.message.answer(text=f"Jang maydoniga hush kelibsiz ☠", reply_markup=await in_war_menu_buttons())
             data = {
                 'is_started': True
             }
-            war = json.loads(
-                requests.patch(url=f"http://127.0.0.1:8000/wars/update/{war['id']}", data=data).content)
+            war = json.loads(requests.patch(url=f"http://127.0.0.1:8000/wars/update/{war['id']}", data=data).content)
             async with state.proxy() as state_data:
                 state_data['war_user'] = war_user
                 state_data['war'] = war
+            await state.set_state('war_menu')
             started = True
-
-
-@dp.callback_query_handler(Text(startswith="select_line_"), state='select_line')
-async def start_fight_function_3(call: types.CallbackQuery, state: FSMContext):
-    async with state.proxy() as state_data:
-        pass
-    data = {"line": int(call.data.split('_')[-1])}
-    requests.patch(url=f"http://127.0.0.1:8000/war-user/update/{state_data['war_user']['id']}/", data=data)
-    await call.message.delete()
-    await state.set_state('war_menu')
-    await call.message.answer(text=f"Jang maydoniga hush kelibsiz ☠", reply_markup=await in_war_menu_buttons())
 
 
 @dp.message_handler(Text(buy_equipments), state='war_menu')
