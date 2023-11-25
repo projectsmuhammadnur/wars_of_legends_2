@@ -10,11 +10,11 @@ from aiogram.types import ReplyKeyboardRemove
 from aiogram.utils.exceptions import MessageNotModified
 
 from bot.buttons.functions import check_day, check_attack, check_afk, check_winners
-from bot.buttons.inline_buttons import get_my_heroes_button, select_line_buttons, attack_hero_buttons, \
+from bot.buttons.inline_buttons import get_my_heroes_button, attack_hero_buttons, \
     buy_equipments_buttons, sell_equipments_buttons
 from bot.buttons.reply_buttons import back_main_menu_button, in_war_menu_buttons, main_menu_buttons
 from bot.buttons.text import start_fight, attack, buy_equipments, sell_equipments, war_statistic
-from bot.dispatcher import dp, bot
+from bot.dispatcher import dp
 from main import admins
 
 
@@ -96,7 +96,6 @@ async def start_fight_function_2(call: types.CallbackQuery, state: FSMContext):
                 'is_started': True
             }
             war = json.loads(requests.patch(url=f"http://127.0.0.1:8000/wars/update/{war['id']}/", data=data).content)
-            await bot.send_message(chat_id=admins[0], text=war)
             async with state.proxy() as state_data:
                 state_data['war_user'] = war_user
                 state_data['war'] = war
