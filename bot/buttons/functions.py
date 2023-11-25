@@ -63,22 +63,22 @@ async def check_winners(war_id, war_user_id):
     war = json.loads(requests.get(url=f"http://127.0.0.1:8000/wars/detail/{war_id}").content)
     for user in war['users'][4:]:
         user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user}").content)
-        if user['is_dead']:
+        if user['is_dead'] is True:
             blues.append(user['id'])
     for user in war['users'][:4]:
         user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user}").content)
-        if user['is_dead']:
+        if user['is_dead'] is True:
             reds.append(user['id'])
     if len(blues) == 4 or len(reds) == 4:
         return False
     else:
-        user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{war_user_id}").content)
+        user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{war_user_id}/").content)
         winners = max(blues, reds, key=len)
         if war_user_id in winners:
             tg_user = json.loads(
-                requests.get(url=f"http://127.0.0.1:8000/telegram-users/detail/{user['user_id']}").content)
+                requests.get(url=f"http://127.0.0.1:8000/telegram-users/detail/{user['user_id']}/").content)
             data = {"gold": tg_user['gold'] + 70}
-            requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{tg_user['id']}", data=data)
+            requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{tg_user['id']}/", data=data)
             return True, True
         else:
             tg_user = json.loads(
