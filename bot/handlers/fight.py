@@ -327,9 +327,9 @@ async def fight_function_1(call: types.CallbackQuery, state: FSMContext):
                    a_user['physical_protection']
         a_control = False
         is_dead = False
-        if user['control']:
+        if user['control'] is True:
             a_control = True
-        if not a_user['control_protection']:
+        if a_user['control_protection'] is True:
             a_control = False
         if a_health <= 0:
             is_dead = True
