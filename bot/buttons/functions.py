@@ -43,7 +43,7 @@ async def check_afk(war_id):
     for user in war['users']:
         user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user}").content)
         updated_at = datetime.datetime.strptime(user['updated_at'], '%Y-%m-%dT%H:%M:%S.%fZ')
-        if updated_at > (datetime.datetime.now() + datetime.timedelta(minutes=5)):
+        if updated_at < (datetime.datetime.now() - datetime.timedelta(minutes=5)):
             tg_user = json.loads(
                 requests.get(url=f"http://127.0.0.1:8000/telegram-users/detail/{user['user_id']}").content)
             data = {
