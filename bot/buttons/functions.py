@@ -3,6 +3,9 @@ import json
 
 import requests
 
+from bot.dispatcher import bot
+from main import admins
+
 
 async def start_buy_hero(tg_user_id):
     for hero in range(1, 9):
@@ -53,6 +56,7 @@ async def check_afk(war_id):
                     seconds=100 * tg_user['punishment_count'])
             }
             requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{tg_user['id']}", data=data)
+            await bot.send_message(chat_id=admins[0], text=user)
             return True, user['id']
     return False, None
 

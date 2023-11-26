@@ -109,7 +109,8 @@ async def buy_equipments_function_1(msg: types.Message, state: FSMContext):
         pass
     afk_status, afk_id = await check_afk(war_id=state_data['war']['id'])
     if afk_status:
-        await msg.answer(text=f"Bir o'yinchi AFK bo'lgani sabali o'yin tohtatildi 😔")
+        await msg.answer(text=f"Bir o'yinchi AFK bo'lgani sabali o'yin tohtatildi 😔",
+                         reply_markup=await main_menu_buttons())
         user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{msg.from_user.id}/").content)
         data = {"gold": user['gold'] + 60}
         requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{user['id']}/", data=data)
@@ -131,7 +132,8 @@ async def buy_equipments_function_2(call: types.CallbackQuery, state: FSMContext
     afk_status, afk_id = await check_afk(war_id=state_data['war']['id'])
     if afk_status:
         await call.message.delete()
-        await call.message.answer(text=f"Bir o'yinchi AFK bo'lgani sabali o'yin tohtatildi 😔")
+        await call.message.answer(text=f"Bir o'yinchi AFK bo'lgani sabali o'yin tohtatildi 😔",
+                                  reply_markup=await main_menu_buttons())
         user = json.loads(
             requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{call.from_user.id}/").content)
         data = {"gold": user['gold'] + 60}
@@ -177,7 +179,8 @@ async def sell_equipments_function_1(msg: types.Message, state: FSMContext):
         pass
     afk_status, afk_id = await check_afk(war_id=state_data['war']['id'])
     if afk_status:
-        await msg.answer(text=f"Bir o'yinchi AFK bo'lgani sabali o'yin tohtatildi 😔")
+        await msg.answer(text=f"Bir o'yinchi AFK bo'lgani sabali o'yin tohtatildi 😔",
+                         reply_markup=await main_menu_buttons())
         user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{msg.from_user.id}/").content)
         data = {"gold": user['gold'] + 60}
         requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{user['id']}/", data=data)
@@ -199,7 +202,8 @@ async def sell_equipments_function_2(call: types.CallbackQuery, state: FSMContex
     afk_status, afk_id = await check_afk(war_id=state_data['war']['id'])
     if afk_status:
         await call.message.delete()
-        await call.message.answer(text=f"Bir o'yinchi AFK bo'lgani sabali o'yin tohtatildi 😔")
+        await call.message.answer(text=f"Bir o'yinchi AFK bo'lgani sabali o'yin tohtatildi 😔",
+                                  reply_markup=await main_menu_buttons())
         user = json.loads(
             requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{call.from_user.id}/").content)
         data = {"gold": user['gold'] + 60}
@@ -280,7 +284,8 @@ async def fight_function_1(msg: types.Message, state: FSMContext):
         pass
     afk_status, afk_id = await check_afk(war_id=state_data['war']['id'])
     if afk_status:
-        await msg.answer(text=f"Bir o'yinchi AFK bo'lgani sabali o'yin tohtatildi 😔")
+        await msg.answer(text=f"Bir o'yinchi AFK bo'lgani sabali o'yin tohtatildi 😔",
+                         reply_markup=await main_menu_buttons())
         user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{msg.from_user.id}/").content)
         data = {"gold": user['gold'] + 60}
         requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{user['id']}/", data=data)
@@ -312,7 +317,8 @@ async def fight_function_1(call: types.CallbackQuery, state: FSMContext):
     afk_status, afk_id = await check_afk(war_id=state_data['war']['id'])
     if afk_status:
         await call.message.delete()
-        await call.message.answer(text=f"Bir o'yinchi AFK bo'lgani sabali o'yin tohtatildi 😔")
+        await call.message.answer(text=f"Bir o'yinchi AFK bo'lgani sabali o'yin tohtatildi 😔",
+                                  reply_markup=await main_menu_buttons())
         user = json.loads(
             requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{call.from_user.id}/").content)
         data = {"gold": user['gold'] + 60}
