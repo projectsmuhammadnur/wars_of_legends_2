@@ -96,7 +96,7 @@ async def start_fight_function_2(call: types.CallbackQuery, state: FSMContext):
                 'is_started': True
             }
             war = json.loads(requests.patch(url=f"http://127.0.0.1:8000/wars/update/{war['id']}/", data=data).content)
-            requests.patch(url=f"http://127.0.0.1/war-user/update/{war_user['id']}/", data={"gold": 0})
+            requests.patch(url=f"http://127.0.0.1:8000/war-user/update/{war_user['id']}/", data={"gold": 0})
             async with state.proxy() as state_data:
                 state_data['war_user'] = war_user
                 state_data['war'] = war
