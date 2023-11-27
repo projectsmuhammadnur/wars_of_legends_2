@@ -21,7 +21,7 @@ async def save_photo(photo: types.PhotoSize, file_path: str):
     return file_path
 
 
-@dp.message_handler(Text(back_main_menu), state=['buy_diamond', 'select_hero'])
+@dp.message_handler(Text(back_main_menu), state=['buy_diamond', 'select_hero', 'advert'])
 async def back_main_menu_function_1(msg: types.Message, state: FSMContext):
     await state.finish()
     await msg.answer(text=f"Asosiy menu🏠", reply_markup=await main_menu_buttons())

@@ -6,3 +6,4 @@ from bot.handlers.shop import *
 from bot.handlers.get_hero_info import *
 from bot.handlers.get_equipments_info import *
 from bot.handlers.get_medal_info import *
+from bot.handlers.send_advert import *

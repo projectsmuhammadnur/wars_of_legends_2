@@ -1,7 +1,8 @@
 from aiogram.types import ReplyKeyboardMarkup
 
 from bot.buttons.text import referral, account, buy_hero, buy_diamond, buy_gold, back_main_menu, shop, heroes, \
-    equipments, start_fight, buy_equipments, sell_equipments, attack, war_statistic, medals
+    equipments, start_fight, buy_equipments, sell_equipments, attack, war_statistic, medals, adverts, none_advert, \
+    forward_advert
 
 
 async def main_menu_buttons():
@@ -27,5 +28,20 @@ async def in_war_menu_buttons():
     design = [
         [buy_equipments, sell_equipments],
         [attack, war_statistic]
+    ]
+    return ReplyKeyboardMarkup(keyboard=design, resize_keyboard=True)
+
+
+async def admin_menu_buttons():
+    design = [
+        [adverts],
+        [back_main_menu]
+    ]
+    return ReplyKeyboardMarkup(keyboard=design, resize_keyboard=True)
+
+
+async def advert_menu_buttons():
+    design = [
+        [none_advert, forward_advert]
     ]
     return ReplyKeyboardMarkup(keyboard=design, resize_keyboard=True)

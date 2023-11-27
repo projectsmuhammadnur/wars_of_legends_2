@@ -18,44 +18,44 @@ async def start_buy_hero(tg_user_id):
 
 
 async def check_day(war_id):
-    war = json.loads(requests.get(url=f"http://127.0.0.1:8000/wars/detail/{war_id}").content)
+    war = json.loads(requests.get(url=f"http://127.0.0.1:8000/wars/detail/{war_id}/").content)
     for user in war['users']:
-        user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user}").content)
+        user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user}/").content)
         if not user['is_dead'] and not user['is_attack']:
             return False, war['day']
     for user in war['users']:
-        w_user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user}").content)
+        w_user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user}/").content)
         data = {
             "is_attack": False,
             "health": w_user['health'] + w_user['restore_health'],
             "gold": w_user['gold'] + 10
         }
-        requests.patch(url=f"http://127.0.0.1:8000/war-user/update/{user}", data=data)
+        requests.patch(url=f"http://127.0.0.1:8000/war-user/update/{user}/", data=data)
     data = {"day": war['day'] + 1}
-    requests.patch(url=f"http://127.0.0.1:8000/wars/update/{war_id}", data=data)
+    requests.patch(url=f"http://127.0.0.1:8000/wars/update/{war_id}/", data=data)
     return True, war['day']
 
 
 async def check_attack(user_id):
-    user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user_id}").content)
+    user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user_id}/").content)
     return user['is_attack'], user['is_control']
 
 
 async def check_afk(war_id):
-    war = json.loads(requests.get(url=f"http://127.0.0.1:8000/wars/detail/{war_id}").content)
+    war = json.loads(requests.get(url=f"http://127.0.0.1:8000/wars/detail/{war_id}/").content)
     for user in war['users']:
-        user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user}").content)
+        user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user}/").content)
         updated_at = datetime.datetime.strptime(user['updated_at'], '%Y-%m-%dT%H:%M:%S.%fZ')
         if updated_at < (datetime.datetime.now() - datetime.timedelta(minutes=5)):
             tg_user = json.loads(
-                requests.get(url=f"http://127.0.0.1:8000/telegram-users/detail/{user['user_id']}").content)
+                requests.get(url=f"http://127.0.0.1:8000/telegram-users/detail/{user['user_id']}/").content)
             data = {
                 "afk_count": tg_user['afk_count'] + 1,
                 "punishment_count": tg_user['punishment_count'] + 1,
                 "punishment_created_at": datetime.datetime.now() + datetime.timedelta(
                     seconds=100 * tg_user['punishment_count'])
             }
-            requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{tg_user['id']}", data=data)
+            requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{tg_user['id']}/", data=data)
             await bot.send_message(chat_id=admins[0], text=user)
             return True, user['id']
     return False, None
@@ -64,13 +64,13 @@ async def check_afk(war_id):
 async def check_winners(war_id, war_user_id):
     blues = []
     reds = []
-    war = json.loads(requests.get(url=f"http://127.0.0.1:8000/wars/detail/{war_id}").content)
+    war = json.loads(requests.get(url=f"http://127.0.0.1:8000/wars/detail/{war_id}/").content)
     for user in war['users'][4:]:
-        user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user}").content)
+        user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user}/").content)
         if user['is_dead'] is True:
             blues.append(user['id'])
     for user in war['users'][:4]:
-        user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user}").content)
+        user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user}/").content)
         if user['is_dead'] is True:
             reds.append(user['id'])
     if len(blues) != 4 and len(reds) != 4:
