@@ -1,10 +1,15 @@
 from django.shortcuts import get_object_or_404
-from rest_framework.generics import RetrieveAPIView, CreateAPIView, DestroyAPIView, UpdateAPIView
+from rest_framework.generics import RetrieveAPIView, CreateAPIView, DestroyAPIView, UpdateAPIView, ListAPIView
 from rest_framework.permissions import AllowAny
 
 from apps.telegram_users.models import TelegramUsers, UserToUsers
 from apps.telegram_users.serializers import TelegramUsersSerializer, TelegramUsersCreateSerializer, \
     UserToUsersSerializer, UserToUsersCreateSerializer
+
+
+class TelegramUsersListViewSet(ListAPIView):
+    queryset = TelegramUsers.objects.all()
+    serializer_class = TelegramUsersSerializer
 
 
 class TelegramUsersCreateViewSet(CreateAPIView):
