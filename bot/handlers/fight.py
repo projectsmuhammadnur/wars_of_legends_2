@@ -84,6 +84,7 @@ async def start_fight_function_2(call: types.CallbackQuery, state: FSMContext):
         war = json.loads(requests.get(url=f"http://127.0.0.1:8000/wars/detail/{call.data.split('_')[-2]}").content)
         if len(war['users']) < 8:
             requests.patch(url=f"http://127.0.0.1:8000/war-user/update/{war_user['id']}/", data={"gold": 0})
+            await state.set_state('just_state')
             try:
                 await session.edit_text(
                     text=f"O'yin boshlanishi uchun yana {8 - len(war['users'])} ta odam kerak❗\nBiroz kuting ⌛️")
