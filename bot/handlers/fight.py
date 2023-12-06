@@ -353,6 +353,7 @@ async def fight_function_1(call: types.CallbackQuery, state: FSMContext):
         data = {
             "health": a_health,
             "is_control": a_control,
+            "is_attack": a_control,
             "is_dead": is_dead
         }
         requests.patch(url=f"http://127.0.0.1:8000/war-user/update/{a_user['id']}/", data=data)
