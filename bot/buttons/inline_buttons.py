@@ -108,7 +108,7 @@ async def get_my_heroes_button(chat_id: int, war_id):
     design = []
     row = []
     users_heroes = []
-    for i in war['users']:
+    for i in war_users:
         war_user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{i}").content)
         users_heroes.append(war_user['hero_id'])
     for index, hero in enumerate(heroes['results'], start=1):
@@ -134,8 +134,9 @@ async def select_line_buttons():
 async def attack_hero_buttons(war_id, war_user_id):
     design = []
     war = json.loads(requests.get(url=f"http://127.0.0.1:8000/wars/detail/{war_id}").content)
-    blues = [war['users'][0], war['users'][1]]
-    reads = [war['users'][2], war['users'][3]]
+    war_users = sorted(war['users'])
+    blues = [war_users[0], war_users[1]]
+    reads = [war_users[2], war_users[3]]
     await bot.send_message(chat_id=admins[0], text=f"{blues}\n{reads}")
     if war_user_id in blues:
         for user in reads:

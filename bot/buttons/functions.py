@@ -64,11 +64,12 @@ async def check_winners(war_id, war_user_id):
     blues = []
     reds = []
     war = json.loads(requests.get(url=f"http://127.0.0.1:8000/wars/detail/{war_id}/").content)
-    for user in war['users'][2:]:
+    war_users = sorted(war['users'])
+    for user in war_users[2:]:
         user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user}/").content)
         if user['is_dead'] is True:
             blues.append(user['id'])
-    for user in war['users'][:2]:
+    for user in war_users[:2]:
         user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user}/").content)
         if user['is_dead'] is True:
             reds.append(user['id'])

@@ -51,7 +51,7 @@ async def start_fight_function_2(call: types.CallbackQuery, state: FSMContext):
     await call.message.delete()
     war = json.loads(requests.get(url=f"http://127.0.0.1:8000/wars/detail/{call.data.split('_')[-2]}/").content)
     session = await call.message.answer(
-        text=f"O'yin boshlanishi uchun yana {4 - len(war['users'])} ta odam kerak❗\nBiroz kuting ⌛️")
+        text=f"O'yin boshlanishi uchun yana {4 - len(war_users)} ta odam kerak❗\nBiroz kuting ⌛️")
     user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{call.from_user.id}/").content)
     hero_id = call.data.split('_')[-1]
     hero = json.loads(requests.get(url=f"http://127.0.0.1:8000/heroes/detail/{hero_id}/").content)
@@ -77,12 +77,12 @@ async def start_fight_function_2(call: types.CallbackQuery, state: FSMContext):
     started = False
     while not started:
         war = json.loads(requests.get(url=f"http://127.0.0.1:8000/wars/detail/{call.data.split('_')[-2]}").content)
-        if len(war['users']) < 4:
+        if len(war_users) < 4:
             requests.patch(url=f"http://127.0.0.1:8000/war-user/update/{war_user['id']}/", data={"gold": 0})
             await state.set_state('just_state')
             try:
                 await session.edit_text(
-                    text=f"O'yin boshlanishi uchun yana {4 - len(war['users'])} ta odam kerak❗\nBiroz kuting ⌛️")
+                    text=f"O'yin boshlanishi uchun yana {4 - len(war_users)} ta odam kerak❗\nBiroz kuting ⌛️")
             except MessageNotModified:
                 pass
             await asyncio.sleep(60)
@@ -235,7 +235,8 @@ async def get_statistic_function_1(msg: types.Message, state: FSMContext):
         pass
     reply = f"{msg.text}\n\n🔵 Koklar:\n"
     war = json.loads(requests.get(url=f"http://127.0.0.1:8000/wars/detail/{state_data['war']['id']}/").content)
-    for user in [war['users'][0], war['users'][1]]:
+    war_users = sorted(war['users'])
+    for user in [war_users[0], war_users[1]]:
         war_user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user}/").content)
         hero = json.loads(requests.get(url=f"http://127.0.0.1:8000/heroes/detail/{war_user['hero_id']}/").content)
         tg_user = json.loads(
@@ -255,7 +256,7 @@ async def get_statistic_function_1(msg: types.Message, state: FSMContext):
 🛡 Jismoniy himoya: {war_user['physical_protection']}\n
 """
     reply += "\n🔴 Qizillar:\n"
-    for user in [war['users'][2], war['users'][3]]:
+    for user in [war_users[2], war_users[3]]:
         war_user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user}/").content)
         hero = json.loads(requests.get(url=f"http://127.0.0.1:8000/heroes/detail/{war_user['hero_id']}/").content)
         tg_user = json.loads(
@@ -329,7 +330,7 @@ async def fight_function_1(call: types.CallbackQuery, state: FSMContext):
         a_user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{a_user_id}/").content)
         health = user["steal_health"] - a_user['stealing_health_protection']
         a_health = a_user['health'] - ((user['magical_attack'] + user["physical_attack"]) - (
-                    a_user['magical_protection'] + a_user['physical_protection']))
+                a_user['magical_protection'] + a_user['physical_protection']))
         is_dead = False
         if a_health <= 0:
             is_dead = True
