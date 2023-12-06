@@ -108,7 +108,7 @@ async def get_my_heroes_button(chat_id: int, war_id):
     design = []
     row = []
     users_heroes = []
-    for i in war_users:
+    for i in war['users']:
         war_user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{i}").content)
         users_heroes.append(war_user['hero_id'])
     for index, hero in enumerate(heroes['results'], start=1):
@@ -181,4 +181,4 @@ async def sell_equipments_buttons(war_user_id):
             design.append(row)
             row = []
 
-    return InlineKeyboardMarkup(inline_keyboard=design), len(design[0])
+    return InlineKeyboardMarkup(inline_keyboard=design), len(war_user['equipments'])

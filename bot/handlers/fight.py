@@ -51,7 +51,7 @@ async def start_fight_function_2(call: types.CallbackQuery, state: FSMContext):
     await call.message.delete()
     war = json.loads(requests.get(url=f"http://127.0.0.1:8000/wars/detail/{call.data.split('_')[-2]}/").content)
     session = await call.message.answer(
-        text=f"O'yin boshlanishi uchun yana {4 - len(war_users)} ta odam kerak❗\nBiroz kuting ⌛️")
+        text=f"O'yin boshlanishi uchun yana {4 - len(war['users'])} ta odam kerak❗\nBiroz kuting ⌛️")
     user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{call.from_user.id}/").content)
     hero_id = call.data.split('_')[-1]
     hero = json.loads(requests.get(url=f"http://127.0.0.1:8000/heroes/detail/{hero_id}/").content)
@@ -77,12 +77,12 @@ async def start_fight_function_2(call: types.CallbackQuery, state: FSMContext):
     started = False
     while not started:
         war = json.loads(requests.get(url=f"http://127.0.0.1:8000/wars/detail/{call.data.split('_')[-2]}").content)
-        if len(war_users) < 4:
+        if len(war['users']) < 4:
             requests.patch(url=f"http://127.0.0.1:8000/war-user/update/{war_user['id']}/", data={"gold": 0})
             await state.set_state('just_state')
             try:
                 await session.edit_text(
-                    text=f"O'yin boshlanishi uchun yana {4 - len(war_users)} ta odam kerak❗\nBiroz kuting ⌛️")
+                    text=f"O'yin boshlanishi uchun yana {4 - len(war['users'])} ta odam kerak❗\nBiroz kuting ⌛️")
             except MessageNotModified:
                 pass
             await asyncio.sleep(60)
@@ -115,14 +115,13 @@ async def buy_equipments_function_1(msg: types.Message, state: FSMContext):
     else:
         bt, status = await buy_equipments_buttons(war_user_id=state_data['war_user']['id'])
         if not status:
-            await state.set_state('buy_equipment')
             await msg.answer(text=f"Qaysi uskunani sotib olasiz 🔨",
                              reply_markup=bt)
         else:
             await msg.answer(text=f"Sizning sumkangiz tolgan 👝")
 
 
-@dp.callback_query_handler(Text(startswith='buy_equipment_'), state='buy_equipment')
+@dp.callback_query_handler(Text(startswith='buy_equipment_'), state='war_menu')
 async def buy_equipments_function_2(call: types.CallbackQuery, state: FSMContext):
     async with state.proxy() as state_data:
         pass
@@ -164,7 +163,6 @@ async def buy_equipments_function_2(call: types.CallbackQuery, state: FSMContext
             }
             requests.patch(url=f"http://127.0.0.1:8000/war-user/update/{war_user['id']}/", data=data)
         else:
-            await state.set_state('war_menu')
             await call.message.answer(text=f"""
 Uskuna narxi: {equipment['salary']} tanga 🪙
 Sizda: {war_user['gold']} tanga ❗️""", reply_markup=await in_war_menu_buttons())
@@ -185,14 +183,13 @@ async def sell_equipments_function_1(msg: types.Message, state: FSMContext):
     else:
         bt, num = await sell_equipments_buttons(war_user_id=state_data['war_user']['id'])
         if num > 0:
-            await state.set_state('sell_equipment')
             await msg.answer(text=f"Qaysi uskunani sotasiz 🔨",
                              reply_markup=bt)
         else:
             await msg.answer(text=f"Siz hali uskuna sotib olmagansiz 🔨")
 
 
-@dp.callback_query_handler(Text(startswith='sell_equipment_'), state='sell_equipment')
+@dp.callback_query_handler(Text(startswith='sell_equipment_'), state='war_menu')
 async def sell_equipments_function_2(call: types.CallbackQuery, state: FSMContext):
     async with state.proxy() as state_data:
         pass
@@ -212,7 +209,6 @@ async def sell_equipments_function_2(call: types.CallbackQuery, state: FSMContex
         equipment = json.loads(
             requests.get(url=f"http://127.0.0.1:8000/equipments/detail/{call.data.split('_')[-1]}/").content)
         await call.message.delete()
-        await state.set_state('war_menu')
         await call.message.answer(text=f"Uskuna sotildi ✅", reply_markup=await in_war_menu_buttons())
         data = {
             "gold": war_user['gold'] + (equipment['salary'] - (equipment['salary'] * 0.4)),

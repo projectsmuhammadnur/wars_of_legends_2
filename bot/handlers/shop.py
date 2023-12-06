@@ -97,8 +97,14 @@ async def buy_diamond_function_2(call: types.CallbackQuery, state: FSMContext):
 Pulni biror kartaga tashlang va chekni yuboring 📷
 
 Kartalar:
+💳UZKARD : 8600 1309 2432 6459
+👆ISM : ISMATOV NIGMATILLA
 
+💳MASTERCARD : 5477 3300 2118 7939
+👆ISM : ISMATOV NIGMATILLA
 
+💳CLICK: 8802811207651542
+👆ISM : ISMATOV NIGMATILLA
 """, reply_markup=await back_main_menu_button())
 
 
