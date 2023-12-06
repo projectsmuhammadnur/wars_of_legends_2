@@ -56,9 +56,6 @@ async def check_afk(war_id):
                     seconds=100 * tg_user['punishment_count'])
             }
             requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{tg_user['id']}/", data=data)
-            await bot.send_message(chat_id=admins[0],
-                                   text=f"{updated_at}, {datetime.datetime.now()}, {updated_at < (datetime.datetime.now() - datetime.timedelta(minutes=5, hours=3))}")
-            await bot.send_message(chat_id=admins[0], text=user)
             return True, user['id']
     return False, None
 

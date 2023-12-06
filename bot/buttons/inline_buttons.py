@@ -4,6 +4,8 @@ import requests
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from bot.buttons.text import back_main_menu, correct, incorrect
+from bot.dispatcher import bot
+from main import admins
 
 
 async def buy_hero_buttons(chat_id: int):
@@ -132,14 +134,17 @@ async def select_line_buttons():
 async def attack_hero_buttons(war_id, war_user_id):
     design = []
     war = json.loads(requests.get(url=f"http://127.0.0.1:8000/wars/detail/{war_id}").content)
-    if war_user_id in war['users'][:4]:
-        for user in war['users'][4:]:
+    blues = war['users'][:4]
+    reads = war['users'][4:]
+    await bot.send_message(chat_id=admins[0], text=f"{blues}\n{reads}")
+    if war_user_id in blues:
+        for user in reads:
             war_user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user}").content)
             hero = json.loads(requests.get(url=f"http://127.0.0.1:8000/heroes/detail/{war_user['hero_id']}").content)
             design.append(
                 [InlineKeyboardButton(text=hero['name'], callback_data=f"attack_hero_{war_user_id}_{war_user['id']}")])
     else:
-        for user in war['users'][:4]:
+        for user in blues:
             war_user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user}").content)
             hero = json.loads(requests.get(url=f"http://127.0.0.1:8000/heroes/detail/{war_user['hero_id']}").content)
             design.append(
