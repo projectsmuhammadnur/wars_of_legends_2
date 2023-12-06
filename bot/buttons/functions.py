@@ -3,9 +3,6 @@ import json
 
 import requests
 
-from bot.dispatcher import bot
-from main import admins
-
 
 async def start_buy_hero(tg_user_id):
     for hero in range(1, 5):
