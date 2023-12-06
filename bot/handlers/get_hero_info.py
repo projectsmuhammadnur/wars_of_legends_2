@@ -30,5 +30,6 @@ async def buy_hero_function_2(call: types.CallbackQuery):
 🛡 Sehrdan himoya: {hero['magical_protection']}
 ⚔️Jismoniy hujum: {hero["physical_attack"]}
 🛡 Jismoniy himoya: {hero['physical_protection']}
-⛔️ Boshqaruv: {hero['control']}
+🧊 Boshqaruv: {hero['control']}
+⛔ Boshqaruvdan himoya: {hero['control_protection']}\n
 """, reply_markup=await info_hero_buttons())

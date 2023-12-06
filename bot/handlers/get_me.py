@@ -12,12 +12,12 @@ from bot.dispatcher import dp
 async def get_me_function(msg: types.Message):
     user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{msg.from_user.id}").content)
     await msg.answer(text=f"""
-ID: <b>{user['chat_id']}</b>
-Username: <b>{user['name']}</b>
-Kubok: <b>{user['cup']}</b>
-Tanga: <b>{user['gold']}</b>
-Olmos: <b>{user['diamond']}</b>
-Qahramonlar: <b>{len(user['heroes'])}</b>
-Medallar: <b>{len(user['medals'])}</b>
-AFK shikoyatlari: <b>{user['afk_count']}</b>
+🆔 ID: <copy>{user['chat_id']}</copy>
+🐶 Username: <b>{user['name']}</b>
+🏆 Kubok: <b>{user['cup']}</b>
+🪙 Tanga: <b>{user['gold']}</b>
+💎 Olmos: <b>{user['diamond']}</b>
+🦸 Qahramonlar: <b>{len(user['heroes'])}</b>
+🎖 Medallar: <b>{len(user['medals'])}</b>
+💬 AFK shikoyatlari: <b>{user['afk_count']}</b>
 """, parse_mode="HTML", )

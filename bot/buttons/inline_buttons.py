@@ -134,8 +134,8 @@ async def select_line_buttons():
 async def attack_hero_buttons(war_id, war_user_id):
     design = []
     war = json.loads(requests.get(url=f"http://127.0.0.1:8000/wars/detail/{war_id}").content)
-    blues = war['users'][:4]
-    reads = war['users'][4:]
+    blues = war['users'][:2]
+    reads = war['users'][2:]
     await bot.send_message(chat_id=admins[0], text=f"{blues}\n{reads}")
     if war_user_id in blues:
         for user in reads:

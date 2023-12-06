@@ -54,7 +54,7 @@ async def start_fight_function_2(call: types.CallbackQuery, state: FSMContext):
     await call.message.delete()
     war = json.loads(requests.get(url=f"http://127.0.0.1:8000/wars/detail/{call.data.split('_')[-2]}/").content)
     session = await call.message.answer(
-        text=f"O'yin boshlanishi uchun yana {8 - len(war['users'])} ta odam kerak❗\nBiroz kuting ⌛️")
+        text=f"O'yin boshlanishi uchun yana {4 - len(war['users'])} ta odam kerak❗\nBiroz kuting ⌛️")
     user = json.loads(requests.get(url=f"http://127.0.0.1:8000/telegram-users/chat_id/{call.from_user.id}/").content)
     hero_id = call.data.split('_')[-1]
     hero = json.loads(requests.get(url=f"http://127.0.0.1:8000/heroes/detail/{hero_id}/").content)
@@ -82,12 +82,12 @@ async def start_fight_function_2(call: types.CallbackQuery, state: FSMContext):
     started = False
     while not started:
         war = json.loads(requests.get(url=f"http://127.0.0.1:8000/wars/detail/{call.data.split('_')[-2]}").content)
-        if len(war['users']) < 8:
+        if len(war['users']) < 4:
             requests.patch(url=f"http://127.0.0.1:8000/war-user/update/{war_user['id']}/", data={"gold": 0})
             await state.set_state('just_state')
             try:
                 await session.edit_text(
-                    text=f"O'yin boshlanishi uchun yana {8 - len(war['users'])} ta odam kerak❗\nBiroz kuting ⌛️")
+                    text=f"O'yin boshlanishi uchun yana {4 - len(war['users'])} ta odam kerak❗\nBiroz kuting ⌛️")
             except MessageNotModified:
                 pass
             await asyncio.sleep(60)
@@ -240,12 +240,13 @@ async def get_statistic_function_1(msg: types.Message, state: FSMContext):
         pass
     reply = f"{msg.text}\n\n🔵 Koklar:\n"
     war = json.loads(requests.get(url=f"http://127.0.0.1:8000/wars/detail/{state_data['war']['id']}/").content)
-    for user in war['users'][:4]:
+    for user in war['users'][:2]:
         war_user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user}/").content)
         hero = json.loads(requests.get(url=f"http://127.0.0.1:8000/heroes/detail/{war_user['hero_id']}/").content)
         tg_user = json.loads(
             requests.get(url=f"http://127.0.0.1:8000/telegram-users/detail/{war_user['user_id']}/").content)
-        reply += f"""
+        if not war_user['is_dead']:
+            reply += f"""
 👤 Ismi: {tg_user['name']}
 🥷 Qahramon: {hero['name']}
 🪙 Tanga: {war_user['gold']}
@@ -255,16 +256,19 @@ async def get_statistic_function_1(msg: types.Message, state: FSMContext):
 🩸 Vampirizmdan himoya: {war_user['stealing_health_protection']}
 🪄 Sehrli hujum: {war_user["magical_attack"]}
 🛡 Sehrdan himoya: {war_user['magical_protection']}
-⚔️Jismoniy hujum: {war_user["physical_attack"]}
-🛡 Jismoniy himoya: {war_user['physical_protection']}\n
+⚔️ Jismoniy hujum: {war_user["physical_attack"]}
+🛡 Jismoniy himoya: {war_user['physical_protection']}
+🧊 Boshqaruv: {war_user['control']}
+⛔️ Boshqaruvdan himoya: {war_user['control_protection']}\n
 """
     reply += "\n🔴 Qizillar:\n"
-    for user in war['users'][4:]:
+    for user in war['users'][2:]:
         war_user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user}/").content)
         hero = json.loads(requests.get(url=f"http://127.0.0.1:8000/heroes/detail/{war_user['hero_id']}/").content)
         tg_user = json.loads(
             requests.get(url=f"http://127.0.0.1:8000/telegram-users/detail/{war_user['user_id']}/").content)
-        reply += f"""
+        if not war_user['is_dead']:
+            reply += f"""
 👤 Ismi: {tg_user['name']}
 🥷 Qahramon: {hero['name']}
 🪙 Tanga: {war_user['gold']}
@@ -274,8 +278,10 @@ async def get_statistic_function_1(msg: types.Message, state: FSMContext):
 🩸 Vampirizmdan himoya: {war_user['stealing_health_protection']}
 🪄 Sehrli hujum: {war_user["magical_attack"]}
 🛡 Sehrdan himoya: {war_user['magical_protection']}
-⚔️Jismoniy hujum: {war_user["physical_attack"]}
+⚔️ Jismoniy hujum: {war_user["physical_attack"]}
 🛡 Jismoniy himoya: {war_user['physical_protection']}\n
+🧊 Boshqaruv: {war_user['control']}
+⛔️ Boshqaruvdan himoya: {war_user['control_protection']}\n
 """
     await msg.answer(text=reply)
 
@@ -293,23 +299,26 @@ async def fight_function_1(msg: types.Message, state: FSMContext):
         requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{user['id']}/", data=data)
         await state.finish()
     else:
-        status, control_status = await check_attack(user_id=state_data['war_user']['id'])
-        if status or control_status:
-            await msg.answer(text=f"Boshqalar hali hujum qilmoqda sabirli bo'ling ⌛")
-        else:
-            war_status, user_status = await check_winners(state_data['war']['id'], state_data['war_user']['id'])
-            if war_status:
-                await state.finish()
-                if user_status:
-                    await msg.answer(text=f"G'alaba🥳\n\n+70 🪙 oldingiz", reply_markup=await main_menu_buttons())
-                else:
-                    await msg.answer(text=f"Mag'lubiyat😔\n\n+50 🪙 oldingiz", reply_markup=await main_menu_buttons())
+        status, control_status, dead_status = await check_attack(user_id=state_data['war_user']['id'])
+        war_status, user_status = await check_winners(state_data['war']['id'], state_data['war_user']['id'])
+        if war_status:
+            await state.finish()
+            if user_status:
+                await msg.answer(text=f"G'alaba🥳\n\n+70 🪙 oldingiz", reply_markup=await main_menu_buttons())
             else:
-                await state.set_state("attack_hero")
-                await msg.answer(text=f"{state_data['war']['day']} - kun 🌤", reply_markup=ReplyKeyboardRemove())
-                await msg.answer(text=f"Qaysi dushmanga hujum qilasiz?",
-                                 reply_markup=await attack_hero_buttons(war_id=state_data['war']['id'],
-                                                                        war_user_id=state_data['war_user']['id']))
+                await msg.answer(text=f"Mag'lubiyat😔\n\n+50 🪙 oldingiz", reply_markup=await main_menu_buttons())
+        elif status:
+            await msg.answer(text=f"Boshqalar hali hujum qilmoqda sabirli bo'ling ⌛")
+        elif control_status:
+            await msg.answer(text=f"Siz qotirilgansiz 🧊")
+        elif dead_status:
+            await msg.answer(text=f"Siz olgansiz ☠️")
+        else:
+            await state.set_state("attack_hero")
+            await msg.answer(text=f"{state_data['war']['day']} - kun 🌤", reply_markup=ReplyKeyboardRemove())
+            await msg.answer(text=f"Qaysi dushmanga hujum qilasiz?",
+                             reply_markup=await attack_hero_buttons(war_id=state_data['war']['id'],
+                                                                    war_user_id=state_data['war_user']['id']))
 
 
 @dp.callback_query_handler(Text(startswith="attack_hero_"), state='attack_hero')
@@ -354,9 +363,8 @@ async def fight_function_1(call: types.CallbackQuery, state: FSMContext):
         user = json.loads(requests.patch(url=f"http://127.0.0.1:8000/war-user/update/{user['id']}/", data=data).content)
         status, day = await check_day(state_data['war']['id'])
         await call.message.delete()
+        await state.set_state('war_menu')
         if user['is_dead'] is True:
-            await state.finish()
-            await call.message.answer(text=f"Siz oldingiz❗", reply_markup=await main_menu_buttons())
+            await call.message.answer(text=f"Siz oldingiz❗", reply_markup=await in_war_menu_buttons())
         else:
-            await state.set_state('war_menu')
             await call.message.answer(text=f"{day} - kun tugadi", reply_markup=await in_war_menu_buttons())

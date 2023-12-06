@@ -8,7 +8,7 @@ from main import admins
 
 
 async def start_buy_hero(tg_user_id):
-    for hero in range(1, 9):
+    for hero in range(1, 5):
         data = {
             "user": tg_user_id,
             "hero": hero
@@ -27,6 +27,7 @@ async def check_day(war_id):
         w_user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user}/").content)
         data = {
             "is_attack": False,
+            "is_control": False,
             "health": w_user['health'] + w_user['restore_health'],
             "gold": w_user['gold'] + 10
         }
@@ -38,7 +39,7 @@ async def check_day(war_id):
 
 async def check_attack(user_id):
     user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user_id}/").content)
-    return user['is_attack'], user['is_control']
+    return user['is_attack'], user['is_control'], user['is_dead']
 
 
 async def check_afk(war_id):
@@ -64,15 +65,15 @@ async def check_winners(war_id, war_user_id):
     blues = []
     reds = []
     war = json.loads(requests.get(url=f"http://127.0.0.1:8000/wars/detail/{war_id}/").content)
-    for user in war['users'][4:]:
+    for user in war['users'][2:]:
         user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user}/").content)
         if user['is_dead'] is True:
             blues.append(user['id'])
-    for user in war['users'][:4]:
+    for user in war['users'][:2]:
         user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user}/").content)
         if user['is_dead'] is True:
             reds.append(user['id'])
-    if len(blues) != 4 and len(reds) != 4:
+    if len(blues) != 2 and len(reds) != 2:
         return False, None
     else:
         user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{war_user_id}/").content)
@@ -80,12 +81,12 @@ async def check_winners(war_id, war_user_id):
         if war_user_id in winners:
             tg_user = json.loads(
                 requests.get(url=f"http://127.0.0.1:8000/telegram-users/detail/{user['user_id']}/").content)
-            data = {"gold": tg_user['gold'] + 70}
+            data = {"gold": tg_user['gold'] + 70, "cup": tg_user['cup'] + 1}
             requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{tg_user['id']}/", data=data)
             return True, True
         else:
             tg_user = json.loads(
                 requests.get(url=f"http://127.0.0.1:8000/telegram-users/detail/{user['user_id']}/").content)
-            data = {"gold": tg_user['gold'] + 50}
+            data = {"gold": tg_user['gold'] + 50, "cup": tg_user['cup'] - 1}
             requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{tg_user['id']}/", data=data)
             return True, True
