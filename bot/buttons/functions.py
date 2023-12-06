@@ -27,19 +27,18 @@ async def check_day(war_id):
         w_user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user}/").content)
         data = {
             "is_attack": False,
-            "is_control": False,
             "health": w_user['health'] + w_user['restore_health'],
             "gold": w_user['gold'] + 10
         }
         requests.patch(url=f"http://127.0.0.1:8000/war-user/update/{user}/", data=data)
     data = {"day": war['day'] + 1}
     requests.patch(url=f"http://127.0.0.1:8000/wars/update/{war_id}/", data=data)
-    return True, war['day']
+    return True, war['day'] + 1
 
 
 async def check_attack(user_id):
     user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user_id}/").content)
-    return user['is_attack'], user['is_control'], user['is_dead']
+    return user['is_attack'], user['is_dead']
 
 
 async def check_afk(war_id):

@@ -6,16 +6,13 @@ import requests
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
-from aiogram.types import ReplyKeyboardRemove
 from aiogram.utils.exceptions import MessageNotModified
-
 from bot.buttons.functions import check_day, check_attack, check_afk, check_winners
 from bot.buttons.inline_buttons import get_my_heroes_button, attack_hero_buttons, \
     buy_equipments_buttons, sell_equipments_buttons
 from bot.buttons.reply_buttons import back_main_menu_button, in_war_menu_buttons, main_menu_buttons
 from bot.buttons.text import start_fight, attack, buy_equipments, sell_equipments, war_statistic
 from bot.dispatcher import dp
-from main import admins
 
 
 @dp.message_handler(Text(start_fight))
@@ -69,8 +66,6 @@ async def start_fight_function_2(call: types.CallbackQuery, state: FSMContext):
         "physical_attack": hero['physical_attack'],
         "magical_protection": hero['magical_protection'],
         "physical_protection": hero['physical_protection'],
-        "control": hero['control'],
-        "control_protection": hero['control_protection'],
         "line": 1,
     }
     war_user = json.loads(requests.post(url="http://127.0.0.1:8000/war-user/create/", data=data).content)
@@ -240,29 +235,7 @@ async def get_statistic_function_1(msg: types.Message, state: FSMContext):
         pass
     reply = f"{msg.text}\n\n🔵 Koklar:\n"
     war = json.loads(requests.get(url=f"http://127.0.0.1:8000/wars/detail/{state_data['war']['id']}/").content)
-    for user in war['users'][:2]:
-        war_user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user}/").content)
-        hero = json.loads(requests.get(url=f"http://127.0.0.1:8000/heroes/detail/{war_user['hero_id']}/").content)
-        tg_user = json.loads(
-            requests.get(url=f"http://127.0.0.1:8000/telegram-users/detail/{war_user['user_id']}/").content)
-        if not war_user['is_dead']:
-            reply += f"""
-👤 Ismi: {tg_user['name']}
-🥷 Qahramon: {hero['name']}
-🪙 Tanga: {war_user['gold']}
-❤️ Jon: {war_user['health']}
-❤️‍🩹 Jon to'lishi: {war_user['restore_health']}
-🧛 Vampirizm: {war_user['steal_health']}
-🩸 Vampirizmdan himoya: {war_user['stealing_health_protection']}
-🪄 Sehrli hujum: {war_user["magical_attack"]}
-🛡 Sehrdan himoya: {war_user['magical_protection']}
-⚔️ Jismoniy hujum: {war_user["physical_attack"]}
-🛡 Jismoniy himoya: {war_user['physical_protection']}
-🧊 Boshqaruv: {war_user['control']}
-⛔️ Boshqaruvdan himoya: {war_user['control_protection']}\n
-"""
-    reply += "\n🔴 Qizillar:\n"
-    for user in war['users'][2:]:
+    for user in [war['users'][0], war['users'][1]]:
         war_user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user}/").content)
         hero = json.loads(requests.get(url=f"http://127.0.0.1:8000/heroes/detail/{war_user['hero_id']}/").content)
         tg_user = json.loads(
@@ -280,8 +253,26 @@ async def get_statistic_function_1(msg: types.Message, state: FSMContext):
 🛡 Sehrdan himoya: {war_user['magical_protection']}
 ⚔️ Jismoniy hujum: {war_user["physical_attack"]}
 🛡 Jismoniy himoya: {war_user['physical_protection']}\n
-🧊 Boshqaruv: {war_user['control']}
-⛔️ Boshqaruvdan himoya: {war_user['control_protection']}\n
+"""
+    reply += "\n🔴 Qizillar:\n"
+    for user in [war['users'][2], war['users'][3]]:
+        war_user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user}/").content)
+        hero = json.loads(requests.get(url=f"http://127.0.0.1:8000/heroes/detail/{war_user['hero_id']}/").content)
+        tg_user = json.loads(
+            requests.get(url=f"http://127.0.0.1:8000/telegram-users/detail/{war_user['user_id']}/").content)
+        if not war_user['is_dead']:
+            reply += f"""
+👤 Ismi: {tg_user['name']}
+🥷 Qahramon: {hero['name']}
+🪙 Tanga: {war_user['gold']}
+❤️ Jon: {war_user['health']}
+❤️‍🩹 Jon to'lishi: {war_user['restore_health']}
+🧛 Vampirizm: {war_user['steal_health']}
+🩸 Vampirizmdan himoya: {war_user['stealing_health_protection']}
+🪄 Sehrli hujum: {war_user["magical_attack"]}
+🛡 Sehrdan himoya: {war_user['magical_protection']}
+⚔️ Jismoniy hujum: {war_user["physical_attack"]}
+🛡 Jismoniy himoya: {war_user['physical_protection']}\n
 """
     await msg.answer(text=reply)
 
@@ -299,7 +290,7 @@ async def fight_function_1(msg: types.Message, state: FSMContext):
         requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{user['id']}/", data=data)
         await state.finish()
     else:
-        status, control_status, dead_status = await check_attack(user_id=state_data['war_user']['id'])
+        status, dead_status = await check_attack(user_id=state_data['war_user']['id'])
         war_status, user_status = await check_winners(state_data['war']['id'], state_data['war_user']['id'])
         if war_status:
             await state.finish()
@@ -309,13 +300,10 @@ async def fight_function_1(msg: types.Message, state: FSMContext):
                 await msg.answer(text=f"Mag'lubiyat😔\n\n+50 🪙 oldingiz", reply_markup=await main_menu_buttons())
         elif status:
             await msg.answer(text=f"Boshqalar hali hujum qilmoqda sabirli bo'ling ⌛")
-        elif control_status:
-            await msg.answer(text=f"Siz qotirilgansiz 🧊")
         elif dead_status:
             await msg.answer(text=f"Siz olgansiz ☠️")
         else:
             await state.set_state("attack_hero")
-            await msg.answer(text=f"{state_data['war']['day']} - kun 🌤", reply_markup=ReplyKeyboardRemove())
             await msg.answer(text=f"Qaysi dushmanga hujum qilasiz?",
                              reply_markup=await attack_hero_buttons(war_id=state_data['war']['id'],
                                                                     war_user_id=state_data['war_user']['id']))
@@ -340,20 +328,13 @@ async def fight_function_1(call: types.CallbackQuery, state: FSMContext):
         user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{user_id}/").content)
         a_user = json.loads(requests.get(url=f"http://127.0.0.1:8000/war-user/detail/{a_user_id}/").content)
         health = user["steal_health"] - a_user['stealing_health_protection']
-        a_health = a_user['health'] - user['magical_attack'] - user["physical_attack"] + a_user['magical_protection'] + \
-                   a_user['physical_protection']
-        a_control = False
+        a_health = a_user['health'] - ((user['magical_attack'] + user["physical_attack"]) - (
+                    a_user['magical_protection'] + a_user['physical_protection']))
         is_dead = False
-        if user['control'] is True:
-            a_control = True
-        if a_user['control_protection'] is True:
-            a_control = False
         if a_health <= 0:
             is_dead = True
         data = {
             "health": a_health,
-            "is_control": a_control,
-            "is_attack": a_control,
             "is_dead": is_dead
         }
         requests.patch(url=f"http://127.0.0.1:8000/war-user/update/{a_user['id']}/", data=data)
