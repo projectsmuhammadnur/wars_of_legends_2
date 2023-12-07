@@ -86,4 +86,4 @@ async def check_winners(war_id, war_user_id):
                 requests.get(url=f"http://127.0.0.1:8000/telegram-users/detail/{user['user_id']}/").content)
             data = {"gold": tg_user['gold'] + 50, "cup": tg_user['cup'] - 1}
             requests.patch(url=f"http://127.0.0.1:8000/telegram-users/update/{tg_user['id']}/", data=data)
-            return True, True
+            return True, False
